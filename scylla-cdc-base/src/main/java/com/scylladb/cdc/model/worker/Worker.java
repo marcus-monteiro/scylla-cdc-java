@@ -76,7 +76,9 @@ public final class Worker {
         for (TableName tableName : tableNames) {
             Optional<Long> ttl = workerConfiguration.cql.fetchTableTTL(tableName).get();
             Date minimumWindowStart = new Date(0);
-            if (ttl.isPresent()) {
+            if(workerConfiguration.customMinimumWindowStart > 0) {
+                minimumWindowStart = new Date(now.getTime() - workerConfiguration.customMinimumWindowStart);
+            } else if (ttl.isPresent()) {
                 minimumWindowStart = new Date(now.getTime() - 1000L * ttl.get()); // TTL is in seconds, getTime() in milliseconds
             }
             minimumWindowStarts.put(tableName, new Timestamp(minimumWindowStart));
