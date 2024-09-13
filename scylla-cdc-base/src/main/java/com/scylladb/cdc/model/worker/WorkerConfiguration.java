@@ -15,6 +15,7 @@ public final class WorkerConfiguration {
     public static final long DEFAULT_CONFIDENCE_WINDOW_SIZE_MS = 30000;
     public static final RetryBackoff DEFAULT_WORKER_RETRY_BACKOFF =
             new ExponentialRetryBackoffWithJitter(10, 30000);
+    public static final long DEFAULT_CUSTOM_MINIMUM_WINDOW_START = 0;
 
     public final WorkerTransport transport;
     public final WorkerCQL cql;
@@ -23,6 +24,8 @@ public final class WorkerConfiguration {
     public final long queryTimeWindowSizeMs;
     public final long confidenceWindowSizeMs;
 
+    public final long customMinimumWindowStart;
+
     public final RetryBackoff workerRetryBackoff;
 
     private final ScheduledExecutorService executorService;
@@ -30,7 +33,7 @@ public final class WorkerConfiguration {
     private final Clock clock;
     
     private WorkerConfiguration(WorkerTransport transport, WorkerCQL cql, Consumer consumer, long queryTimeWindowSizeMs,
-            long confidenceWindowSizeMs, RetryBackoff workerRetryBackoff, ScheduledExecutorService executorService, Clock clock) {
+            long confidenceWindowSizeMs, RetryBackoff workerRetryBackoff, ScheduledExecutorService executorService, Clock clock, long customMinimumWindowStart) {
         this.transport = Preconditions.checkNotNull(transport);
         this.cql = Preconditions.checkNotNull(cql);
         this.consumer = Preconditions.checkNotNull(consumer);
@@ -41,6 +44,7 @@ public final class WorkerConfiguration {
         this.workerRetryBackoff = Preconditions.checkNotNull(workerRetryBackoff);
         this.executorService = executorService;
         this.clock = Preconditions.checkNotNull(clock);
+        this.customMinimumWindowStart = customMinimumWindowStart;
     }
     
     public ScheduledExecutorService getExecutorService() {
@@ -70,6 +74,8 @@ public final class WorkerConfiguration {
 
         private long queryTimeWindowSizeMs = DEFAULT_QUERY_TIME_WINDOW_SIZE_MS;
         private long confidenceWindowSizeMs = DEFAULT_CONFIDENCE_WINDOW_SIZE_MS;
+
+        private long customMinimumWindowStart = DEFAULT_CUSTOM_MINIMUM_WINDOW_START;
 
         private RetryBackoff workerRetryBackoff = DEFAULT_WORKER_RETRY_BACKOFF;
 
@@ -115,6 +121,11 @@ public final class WorkerConfiguration {
         public Builder withConfidenceWindowSizeMs(long confidenceWindowSizeMs) {
             Preconditions.checkArgument(confidenceWindowSizeMs > 0);
             this.confidenceWindowSizeMs = confidenceWindowSizeMs;
+            return this;
+        }
+
+        public Builder withCustomMinimumWindowStart(long customMinimumWindowStart) {
+            this.customMinimumWindowStart = customMinimumWindowStart;
             return this;
         }
 
