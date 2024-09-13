@@ -162,7 +162,7 @@ public final class WorkerConfiguration {
                 executorService = Executors.newScheduledThreadPool(1);
             }
             return new WorkerConfiguration(transport, cql, consumer, queryTimeWindowSizeMs, confidenceWindowSizeMs,
-                    workerRetryBackoff, executorService, clock);
+                    workerRetryBackoff, executorService, clock, customMinimumWindowStart);
         }
     }
 }
